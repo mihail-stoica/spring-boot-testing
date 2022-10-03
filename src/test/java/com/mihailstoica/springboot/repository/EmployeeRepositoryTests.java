@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -106,6 +107,53 @@ public class EmployeeRepositoryTests {
 
         //then - verify the output
         assertThat(employeeDB).isNotNull();
+    }
+
+    //JUnit test for update employee operation
+    @DisplayName("JUnit test for update employee operation")
+    @Test
+    public void givenEmployeeObject_whenUpdateEmployee_thenReturnUpdatedEmployee() {
+
+        //given - precondition or setup
+        Employee employee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@xyz,com")
+                .build();
+        employeeRepository.save(employee);
+
+        //when - action or behaviour that we are going to test
+        Employee savedEmployee = employeeRepository.findById(employee.getId()).get();
+        savedEmployee.setEmail("john_doe@xyz,xyz");
+        savedEmployee.setFirstName("Jon");
+        Employee updatedEmployee = employeeRepository.save(savedEmployee);
+
+        //then - verify the output
+        assertThat(updatedEmployee.getEmail()).isEqualTo("john_doe@xyz,xyz");
+        assertThat(updatedEmployee.getFirstName()).isEqualTo("Jon");
+    }
+
+    //JUnit test for delete employee
+    @DisplayName("JUnit test for delete employee")
+    @Test
+    public void givenEmployeeObject_whenDelete_thenRemoveEmployee() {
+
+        //given - precondition or setup
+        Employee employee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@xyz,com")
+                .build();
+        employeeRepository.save(employee);
+
+        //when - action or behaviour that we are going to test
+        //employeeRepository.deleteById(employee.getId());
+        employeeRepository.delete(employee);
+        Optional<Employee> employeeOptional = employeeRepository.findById(employee.getId());
+
+        //then - verify the output
+        //assertThat(employeeRepository.count()).isEqualTo(0);
+        assertThat(employeeOptional).isEmpty();
     }
 
 }
