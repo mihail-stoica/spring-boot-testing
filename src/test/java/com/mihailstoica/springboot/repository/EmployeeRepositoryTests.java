@@ -83,7 +83,7 @@ public class EmployeeRepositoryTests {
         employeeRepository.save(employee);
 
         //when - action or behaviour that we are going to test
-        Employee employeeDB = employeeRepository.findById(employee.getId()).get();
+        Employee employeeDB = employeeRepository.findById(employee.getId()).orElseThrow();
 
         //then - verify the output
         assertThat(employeeDB).isNotNull();
@@ -103,7 +103,7 @@ public class EmployeeRepositoryTests {
         employeeRepository.save(employee);
 
         //when - action or behaviour that we are going to test
-        Employee employeeDB = employeeRepository.findByEmail(employee.getEmail()).get();
+        Employee employeeDB = employeeRepository.findByEmail(employee.getEmail()).orElseThrow();
 
         //then - verify the output
         assertThat(employeeDB).isNotNull();
@@ -123,7 +123,7 @@ public class EmployeeRepositoryTests {
         employeeRepository.save(employee);
 
         //when - action or behaviour that we are going to test
-        Employee savedEmployee = employeeRepository.findById(employee.getId()).get();
+        Employee savedEmployee = employeeRepository.findById(employee.getId()).orElseThrow();
         savedEmployee.setEmail("john_doe@xyz,xyz");
         savedEmployee.setFirstName("Jon");
         Employee updatedEmployee = employeeRepository.save(savedEmployee);
@@ -201,5 +201,51 @@ public class EmployeeRepositoryTests {
         assertThat(savedEmployee).isNotNull();
         assertThat(savedEmployee).isEqualTo(employee);
     }
+
+    //JUnit test for get employee by last name and email, custom query using native SQL with indexed parameters
+    @DisplayName("JUnit test for get employee by last name and email")
+    @Test
+    public void givenLastNameAndEmail_whenFindByLastNameAndEmail_thenReturnEmployeeObject() {
+
+        //given - precondition or setup
+        Employee employee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@xyz,com")
+                .build();
+        employeeRepository.save(employee);
+        String lastName = employee.getLastName();
+        String email = employee.getEmail();
+
+        //when - action or behaviour that we are going to test
+        Employee savedEmployee = employeeRepository.findByLastNameAndEmail(lastName, email);
+
+        //then - verify the output
+        assertThat(savedEmployee).isNotNull();
+        assertThat(savedEmployee).isEqualTo(employee);
+    }
+
+    //JUnit test for get employee by first name, last name and email, custom query using native SQL with named param
+    @DisplayName("JUnit test for get employee by first name, last name and email")
+    @Test
+    public void givenFirstNameAndLastNameAndEmail_whenFindByFirstNameAndLastNameAndEmail_thenReturnEmployeeObject() {
+
+        //given - precondition or setup
+        Employee employee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@xyz,com")
+                .build();
+        employeeRepository.save(employee);
+
+        //when - action or behaviour that we are going to test
+        Employee savedEmployee = employeeRepository.findByFirstNameAndLastNameAndEmail(employee.getFirstName(),
+                employee.getLastName(), employee.getEmail());
+
+        //then - verify the output
+        assertThat(savedEmployee).isNotNull();
+        assertThat(savedEmployee).isEqualTo(employee);
+    }
+
 
 }
