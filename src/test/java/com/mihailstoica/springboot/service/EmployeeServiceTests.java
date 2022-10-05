@@ -1,8 +1,10 @@
 package com.mihailstoica.springboot.service;
 
+import com.mihailstoica.springboot.exception.ResourceNotFoundException;
 import com.mihailstoica.springboot.model.Employee;
 import com.mihailstoica.springboot.repository.EmployeeRepository;
 import com.mihailstoica.springboot.service.impl.EmployeeServiceImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +16,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class EmployeeServiceTests {
@@ -58,6 +63,23 @@ public class EmployeeServiceTests {
         //then - verify the output
         assertThat(savedEmployee).isNotNull();
         assertThat(savedEmployee).isEqualTo(employee);
+    }
+
+    //JUnit test for saveEmployee method
+    @DisplayName("JUnit test for saveEmployee method which throws exception")
+    @Test
+    public void givenEmployeeObject_whenSaveEmployee_thenThrowsResourceNotFoundException() {
+
+        //given - precondition or setup
+
+        //stub method employeeRepository.findByEmail()
+        given(employeeRepository.findByEmail(employee.getEmail())).willReturn(Optional.of(employee));
+
+        //when - action or behaviour that we are going to test
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> employeeService.saveEmployee(employee));
+
+        //then - verify the output
+        verify(employeeRepository, never()).save(any(Employee.class));
     }
 
 }
