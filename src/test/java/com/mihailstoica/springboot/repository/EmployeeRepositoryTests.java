@@ -1,6 +1,7 @@
 package com.mihailstoica.springboot.repository;
 
 import com.mihailstoica.springboot.model.Employee;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,16 @@ public class EmployeeRepositoryTests {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+    private Employee employee;
+    @BeforeEach
+    public void setup() {
+        this.employee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@xyz,com")
+                .build();
+        employeeRepository.save(this.employee);
+    }
 
     //JUnit test for save employee operation
     @DisplayName("JUnit test for save employee operation")
@@ -23,11 +34,6 @@ public class EmployeeRepositoryTests {
     public void givenEmployeeObject_whenSave_thenReturnSavedEmployee() {
 
         //given - precondition or setup
-        Employee employee = Employee.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("john.doe@xyz,com")
-                .build();
 
         //when - action or behaviour that we are going to test
         Employee savedEmployee = employeeRepository.save(employee);
@@ -45,19 +51,11 @@ public class EmployeeRepositoryTests {
 
         //given - precondition or setup
         Employee employee1 = Employee.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("john.doe@xyz,com")
-                .build();
-
-        Employee employee2 = Employee.builder()
                 .firstName("Jane")
                 .lastName("Doe")
                 .email("jane.doe@xyz,com")
                 .build();
-
         employeeRepository.save(employee1);
-        employeeRepository.save(employee2);
 
         //when - action or behaviour that we are going to test
         List<Employee> employeeList = employeeRepository.findAll();
@@ -65,8 +63,8 @@ public class EmployeeRepositoryTests {
         //then - verify the output
         assertThat(employeeList).isNotNull();
         assertThat(employeeList.size()).isEqualTo(2);
-        assertThat(employee1).isEqualTo(employeeList.get(0));
-        assertThat(employee2).isEqualTo(employeeList.get(1));
+        assertThat(employee).isEqualTo(employeeList.get(0));
+        assertThat(employee1).isEqualTo(employeeList.get(1));
     }
 
     //JUnit test for get employee by id operation
@@ -75,12 +73,6 @@ public class EmployeeRepositoryTests {
     public void givenEmployeeObject_whenFindById_thenReturnEmployeeObject() {
 
         //given - precondition or setup
-        Employee employee = Employee.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("john.doe@xyz,com")
-                .build();
-        employeeRepository.save(employee);
 
         //when - action or behaviour that we are going to test
         Employee employeeDB = employeeRepository.findById(employee.getId()).orElseThrow();
@@ -95,12 +87,6 @@ public class EmployeeRepositoryTests {
     public void givenEmployeeObject_whenFindByEmail_thenReturnEmployeeObject() {
 
         //given - precondition or setup
-        Employee employee = Employee.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("john.doe@xyz,com")
-                .build();
-        employeeRepository.save(employee);
 
         //when - action or behaviour that we are going to test
         Employee employeeDB = employeeRepository.findByEmail(employee.getEmail()).orElseThrow();
@@ -115,12 +101,6 @@ public class EmployeeRepositoryTests {
     public void givenEmployeeObject_whenUpdateEmployee_thenReturnUpdatedEmployee() {
 
         //given - precondition or setup
-        Employee employee = Employee.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("john.doe@xyz,com")
-                .build();
-        employeeRepository.save(employee);
 
         //when - action or behaviour that we are going to test
         Employee savedEmployee = employeeRepository.findById(employee.getId()).orElseThrow();
@@ -139,12 +119,6 @@ public class EmployeeRepositoryTests {
     public void givenEmployeeObject_whenDelete_thenRemoveEmployee() {
 
         //given - precondition or setup
-        Employee employee = Employee.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("john.doe@xyz,com")
-                .build();
-        employeeRepository.save(employee);
 
         //when - action or behaviour that we are going to test
         //employeeRepository.deleteById(employee.getId());
@@ -162,12 +136,6 @@ public class EmployeeRepositoryTests {
     public void givenFirsNameAndLastName_whenFindByFirstNameAndLastName_thenReturnEmployeeObject() {
 
         //given - precondition or setup
-        Employee employee = Employee.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("john.doe@xyz,com")
-                .build();
-        employeeRepository.save(employee);
         String firstName = "John";
         String lastName = "Doe";
 
@@ -185,12 +153,6 @@ public class EmployeeRepositoryTests {
     public void givenFirstNameAndEmail_whenFindByFirstNameAndEmail_thenReturnEmployeeObject() {
 
         //given - precondition or setup
-        Employee employee = Employee.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("john.doe@xyz,com")
-                .build();
-        employeeRepository.save(employee);
         String firstName = "John";
         String email = "john.doe@xyz,com";
 
@@ -208,12 +170,6 @@ public class EmployeeRepositoryTests {
     public void givenLastNameAndEmail_whenFindByLastNameAndEmail_thenReturnEmployeeObject() {
 
         //given - precondition or setup
-        Employee employee = Employee.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("john.doe@xyz,com")
-                .build();
-        employeeRepository.save(employee);
         String lastName = employee.getLastName();
         String email = employee.getEmail();
 
@@ -231,12 +187,6 @@ public class EmployeeRepositoryTests {
     public void givenFirstNameAndLastNameAndEmail_whenFindByFirstNameAndLastNameAndEmail_thenReturnEmployeeObject() {
 
         //given - precondition or setup
-        Employee employee = Employee.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("john.doe@xyz,com")
-                .build();
-        employeeRepository.save(employee);
 
         //when - action or behaviour that we are going to test
         Employee savedEmployee = employeeRepository.findByFirstNameAndLastNameAndEmail(employee.getFirstName(),
