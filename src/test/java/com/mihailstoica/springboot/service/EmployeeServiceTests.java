@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,6 +81,30 @@ public class EmployeeServiceTests {
 
         //then - verify the output
         verify(employeeRepository, never()).save(any(Employee.class));
+    }
+
+    //JUnit test for
+    @DisplayName("JUnit test for getAllEmployees method")
+    @Test
+    public void givenEmployeeRepository_whenGetAllEmployees_thenReturnEmployeesList() {
+
+        //given - precondition or setup
+        Employee employee1 = Employee.builder()
+                .id(2L)
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@xyz,com")
+                .build();
+        //stub method employeeRepository.findAll()
+        given(employeeRepository.findAll()).willReturn(List.of(employee, employee1));
+
+        //when - action or behaviour that we are going to test
+        List<Employee> savedAllEmployee = employeeService.getAllEmployees();
+
+        //then - verify the output
+        assertThat(savedAllEmployee).isNotNull();
+        assertThat(savedAllEmployee.size()).isEqualTo(2);
+        assertThat(savedAllEmployee).isEqualTo(employeeRepository.findAll());
     }
 
 }
