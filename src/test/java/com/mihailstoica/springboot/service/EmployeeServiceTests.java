@@ -20,8 +20,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EmployeeServiceTests {
@@ -128,6 +128,58 @@ public class EmployeeServiceTests {
 
         //then - verify the output
         assertThat(savedAllEmployee).isEmpty();
+    }
+
+    //JUnit test for getEmployeeById
+    @DisplayName("JUnit test for getEmployeeById")
+    @Test
+    public void givenEmployeeId_whenGetEmployeeById_thenReturnEmployeeObject() {
+
+        //given - precondition or setup
+        long id = 1L;
+        //stub method employeeRepository.findById()
+        given(employeeRepository.findById(id)).willReturn(Optional.of(employee));
+
+        //when - action or behaviour that we are going to test
+        Employee savedEmployee = employeeService.getEmployeeById(employee.getId()).get();
+
+        //then - verify the output
+        assertThat(savedEmployee).isNotNull();
+        assertThat(savedEmployee).isEqualTo(employee);
+    }
+
+    //JUnit test for updateEmployee method
+    @DisplayName("JUnit test for updateEmployee method")
+    @Test
+    public void givenEmployeeObject_whenUpdateEmployee_thenReturnUpdatedEmployee() {
+
+        //given - precondition or setup
+        given(employeeRepository.save(employee)).willReturn(employee);
+        employee.setEmail("john.doe@xyz,xyz");
+        employee.setFirstName("John");
+
+        //when - action or behaviour that we are going to test
+        Employee updatedEmployee = employeeService.updateEmployee(employee);
+
+        //then - verify the output
+        assertThat(updatedEmployee).isNotNull();
+        assertThat(updatedEmployee).isEqualTo(employee);
+    }
+
+    //JUnit test for deleteEmployee method
+    @DisplayName("JUnit test for deleteEmployee method")
+    @Test
+    public void givenEmployeeId_whenDeleteEmployee_thenNothing() {
+
+        //given - precondition or setup
+        long employeeId = 1L;
+        willDoNothing().given(employeeRepository).deleteById(employeeId);
+
+        //when - action or behaviour that we are going to test
+        employeeService.deleteEmployee(employeeId);
+
+        //then - verify the output
+        verify(employeeRepository, times(1)).deleteById(employeeId);
     }
 
 }
