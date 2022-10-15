@@ -18,8 +18,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -109,8 +108,8 @@ public class EmployeeControllerTests {
                 .andExpect(jsonPath("$.email", is(employee.getEmail())));
     }
 
-    //negative scenario - valid employee id
-    @DisplayName("JUnit test for getEmployeeById() positive scenario")
+    //negative scenario - invalid employee id
+    @DisplayName("JUnit test for getEmployeeById() negative scenario")
     @Test
     public void givenEmployeeId_whenGetEmployeeById_thenReturnEmpty() throws Exception {
 
@@ -130,5 +129,72 @@ public class EmployeeControllerTests {
         response.andExpect(status().isNotFound())
                 .andDo(print());
     }
+
+    //positive scenario - valid employee id
+    @DisplayName("JUnit test for updateEmployee() positive scenario")
+    @Test
+    public void givenEmployeeIdAndUpdatedEmployee_whenUpdateEmployee_thenReturnUpdatedEmployeeObject()
+            throws Exception {
+
+        //given - precondition or setup
+        long employeeId = 1L;
+        Employee employee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@xyz,xyz")
+                .build();
+
+        Employee updatedEmployee = Employee.builder()
+                .firstName("Jane")
+                .lastName("Doe")
+                .email("jane.doe@xyz,xyz")
+                .build();
+        //stub method employeeService.getEmployeeById()
+        given(employeeService.getEmployeeById(employeeId)).willReturn(Optional.of(employee));
+        given(employeeService.updateEmployee(updatedEmployee)).willAnswer(invocation -> invocation.getArgument(0));
+
+        //when - action or behaviour that we are going to test
+        ResultActions response = mockMvc.perform(put("/api/employees/{id}", employeeId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedEmployee)));
+
+        //then - verify the output
+        response.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.firstName", is(updatedEmployee.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(updatedEmployee.getLastName())))
+                .andExpect(jsonPath("$.email", is(updatedEmployee.getEmail())));
+    }
+
+    //negative scenario - invalid employee id
+    @DisplayName("JUnit test for updateEmployee() negative scenario")
+    @Test
+    public void givenEmployeeIdAndUpdatedEmployee_whenUpdateEmployee_thenReturn404() throws Exception {
+
+        //given - precondition or setup
+        long employeeId = 1L;
+        Employee employee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@xyz,xyz")
+                .build();
+
+        Employee updatedEmployee = Employee.builder()
+                .firstName("Jane")
+                .lastName("Doe")
+                .email("jane.doe@xyz,xyz")
+                .build();
+
+        //stub method employeeService.getEmployeeById()
+        given(employeeService.getEmployeeById(employeeId)).willReturn(Optional.empty());
+
+        //when - action or behaviour that we are going to test
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", employeeId));
+
+        //then - verify the output
+        response.andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
 
 }
