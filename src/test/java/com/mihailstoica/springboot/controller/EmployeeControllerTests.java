@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -80,6 +81,54 @@ public class EmployeeControllerTests {
         response.andExpect((status().isOk()))
                 .andDo(print())
                 .andExpect(jsonPath("$.size()", is(listOfEmployees.size())));
+    }
+
+    //positive scenario - valid employee id
+    @DisplayName("JUnit test for getEmployeeById() positive scenario")
+    @Test
+    public void givenEmployeeId_whenGetEmployeeById_thenReturnObject() throws Exception {
+
+        //given - precondition or setup
+        long employeeId = 1L;
+        Employee employee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@xyz,xyz")
+                .build();
+        //stub method employeeService.getEmployeeById()
+        given(employeeService.getEmployeeById(employeeId)).willReturn(Optional.of(employee));
+
+        //when - action or behaviour that we are going to test
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", employeeId));
+
+        //then - verify the output
+        response.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.firstName", is(employee.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(employee.getLastName())))
+                .andExpect(jsonPath("$.email", is(employee.getEmail())));
+    }
+
+    //negative scenario - valid employee id
+    @DisplayName("JUnit test for getEmployeeById() positive scenario")
+    @Test
+    public void givenEmployeeId_whenGetEmployeeById_thenReturnEmpty() throws Exception {
+
+        //given - precondition or setup
+        long employeeId = 1L;
+        Employee employee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@xyz,xyz")
+                .build();
+        //stub method employeeService.getEmployeeById()
+        given(employeeService.getEmployeeById(employeeId)).willReturn(Optional.empty());
+        //when - action or behaviour that we are going to test
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", employeeId));
+
+        //then - verify the output
+        response.andExpect(status().isNotFound())
+                .andDo(print());
     }
 
 }
