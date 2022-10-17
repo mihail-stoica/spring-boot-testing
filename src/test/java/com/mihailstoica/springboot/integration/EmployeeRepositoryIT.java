@@ -7,10 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,18 +14,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-public class EmployeeRepositoryIT {
-
-    @Container
-    private static final MySQLContainer<?> MY_SQL_CONTAINER = new MySQLContainer<>("mysql:latest");
-
-    @DynamicPropertySource
-    public static void dynamicPropertySource(DynamicPropertyRegistry propertyRegistry) {
-
-        propertyRegistry.add("spring.datasource.url", MY_SQL_CONTAINER::getJdbcUrl);
-        propertyRegistry.add(" spring.datasource.username", MY_SQL_CONTAINER::getUsername);
-        propertyRegistry.add("spring.datasource.password", MY_SQL_CONTAINER::getPassword);
-    }
+public class EmployeeRepositoryIT extends AbstractContainerBaseTest {
 
     @Autowired
     private EmployeeRepository employeeRepository;

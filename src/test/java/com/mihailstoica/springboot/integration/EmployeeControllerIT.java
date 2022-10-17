@@ -11,13 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 
@@ -29,19 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@Testcontainers
-public class EmployeeControllerIT {
+public class EmployeeControllerIT extends AbstractContainerBaseTest {
 
-    @Container
-    private static final MySQLContainer<?> MY_SQL_CONTAINER = new MySQLContainer<>("mysql:latest");
-
-    @DynamicPropertySource
-    public static void dynamicPropertySource(DynamicPropertyRegistry propertyRegistry) {
-
-        propertyRegistry.add("spring.datasource.url", MY_SQL_CONTAINER::getJdbcUrl);
-        propertyRegistry.add(" spring.datasource.username", MY_SQL_CONTAINER::getUsername);
-        propertyRegistry.add("spring.datasource.password", MY_SQL_CONTAINER::getPassword);
-    }
     @Autowired
     private MockMvc mockMvc;
 
@@ -63,11 +47,6 @@ public class EmployeeControllerIT {
     @DisplayName("JUnit test for createEmployee")
     @Test
     public void givenEmployeeObject_whenCreateEmployee_thenReturnSavedEmployee() throws Exception {
-
-        System.out.println(MY_SQL_CONTAINER.getJdbcUrl());
-        System.out.println(MY_SQL_CONTAINER.getDatabaseName());
-        System.out.println(MY_SQL_CONTAINER.getUsername());
-        System.out.println(MY_SQL_CONTAINER.getPassword());
 
         //given - precondition or setup
         Employee employee = Employee.builder()
