@@ -1,1 +1,1 @@
-Unit tests and Integration tests for Spring Boot App using JUnit, Mockito, AssertJ, Hamcrest, JsonPath, & Testcontainers
+Unit and Integration testing for a Spring Boot REST API using JUnit, Mockito, AssertJ, Hamcrest, JsonPath and Testcontainers 
