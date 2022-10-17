@@ -89,4 +89,53 @@ public class EmployeeControllerITests {
                 .andExpect(jsonPath("$.size()", is(listOfEmployees.size())));
     }
 
+    //positive scenario - valid employee id
+    @DisplayName("JUnit test for getEmployeeById() positive scenario")
+    @Test
+    public void givenEmployeeId_whenGetEmployeeById_thenReturnObject() throws Exception {
+
+        //given - precondition or setup
+        Employee employee = Employee.builder()
+                .id(1L)
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@xyz,xyz")
+                .build();
+
+        Employee savedEmployee = employeeRepository.save(employee);
+
+        //when - action or behaviour that we are going to test
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", savedEmployee.getId()));
+
+        //then - verify the output
+        response.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.firstName", is(employee.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(employee.getLastName())))
+                .andExpect(jsonPath("$.email", is(employee.getEmail())));
+    }
+
+    //negative scenario - invalid employee id
+    @DisplayName("JUnit test for getEmployeeById() negative scenario")
+    @Test
+    public void givenEmployeeId_whenGetEmployeeById_thenReturnEmpty() throws Exception {
+
+        //given - precondition or setup
+        long employeeId = 1L;
+        Employee employee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@xyz,xyz")
+                .build();
+
+        employeeRepository.save(employee);
+
+        //when - action or behaviour that we are going to test
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", employeeId));
+
+        //then - verify the output
+        response.andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
 }
