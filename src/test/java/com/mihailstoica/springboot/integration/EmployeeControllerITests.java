@@ -194,4 +194,25 @@ public class EmployeeControllerITests {
                 .andDo(print());
     }
 
+    @DisplayName("JUnit test for deleteEmployee")
+    @Test
+    public void givenEmployeeId_whenDeleteEmployee_thenReturn200() throws Exception {
+
+        //given - precondition or setup
+        Employee employee = Employee.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@xyz,xyz")
+                .build();
+
+        Employee savedEmployee = employeeRepository.save(employee);
+
+        //when - action or behaviour that we are going to test
+        ResultActions response = mockMvc.perform(delete("/api/employees/{id}", savedEmployee.getId()));
+
+        //then - verify the output
+        response.andExpect(status().isOk())
+                .andDo(print());
+    }
+
 }
